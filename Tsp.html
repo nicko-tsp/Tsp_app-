@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accès aux épreuves</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #f5f5f5;
+    }
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1rem;
+    }
+    img.protected {
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+
+  <!-- Page 1 -->
+  <div id="page1" class="page active">
+    <h2>Bonjour poto, t'as fait le bon choix !</h2>
+    <p>Clique sur "Continuer"</p>
+    <button onclick="goToPage('page2')">Continuer</button>
+  </div>
+
+  <!-- Page 2 : Formulaire -->
+  <div id="page2" class="page">
+    <h2>Remplis les champs ci-dessous</h2>
+    <form id="infoForm">
+      <label>Classe :</label>
+      <select id="classe">
+        <option value="">--Choisir--</option>
+        <option value="1ere">1ère</option>
+        <option value="2e">2e année</option>
+      </select><br>
+
+      <label>Filière :</label>
+      <select id="filiere">
+        <option value="">--Choisir--</option>
+        <option value="MSP">MSP</option>
+        <option value="LSI">LSI</option>
+      </select><br>
+
+      <label>Réseau téléphonique :</label>
+      <select id="reseau">
+        <option value="">--Choisir--</option>
+        <option value="MTN">MTN</option>
+        <option value="ORANGE">ORANGE</option>
+      </select><br>
+
+      <button type="button" onclick="validerFormulaire()">Continuer</button>
+    </form>
+  </div>
+
+  <!-- Page d'erreur -->
+  <div id="errorPage" class="page">
+    <h2>Vous n'avez droit qu'aux options entre parenthèses</h2>
+    <button onclick="goToPage('page2')">Revenir</button>
+  </div>
+
+  <!-- Page paiement -->
+  <div id="paymentPage" class="page">
+    <h2>Faites un dépôt de 1000 F CFA</h2>
+    <p id="paymentText"></p>
+    <button onclick="goToPage('epreuvesPage')">J'ai déjà fait le dépôt</button>
+  </div>
+
+  <!-- Page épreuves -->
+  <div id="epreuvesPage" class="page">
+    <h2>Épreuves du premier semestre</h2>
+    <p>Voici les épreuves. Merci pour ton dépôt 🙏</p>
+    <div>
+      <img src="https://via.placeholder.com/300x400?text=Epreuve+1" class="protected" alt="Épreuve 1">
+      <img src="https://via.placeholder.com/300x400?text=Epreuve+2" class="protected" alt="Épreuve 2">
+      <img src="https://via.placeholder.com/300x400?text=Epreuve+3" class="protected" alt="Épreuve 3">
+    </div>
+  </div>
+
+  <script>
+    function goToPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function validerFormulaire() {
+      const classe = document.getElementById("classe").value;
+      const filiere = document.getElementById("filiere").value;
+      const reseau = document.getElementById("reseau").value;
+
+      const classesValid = ["1ere", "2e"];
+      const filieresValid = ["MSP", "LSI"];
+      const reseauxValid = ["MTN", "ORANGE"];
+
+      if (!classesValid.includes(classe) || !filieresValid.includes(filiere) || !reseauxValid.includes(reseau)) {
+        goToPage('errorPage');
+      } else {
+        let numero = "";
+        if (reseau === "MTN") {
+          numero = "683920058";
+        } else {
+          numero = "(numéro Orange bientôt disponible)";
+        }
+        document.getElementById("paymentText").innerText = `Envoyez 1000 F CFA au numéro ${numero} pour obtenir les épreuves.`;
+        goToPage('paymentPage');
+      }
+    }
+
+    // Empêcher glisser-déposer et sélectionner les images
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+
+    // Détection (limitée) d'impression ou screenshot
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "PrintScreen") {
+        alert("Les captures d’écran ne sont pas autorisées !");
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
